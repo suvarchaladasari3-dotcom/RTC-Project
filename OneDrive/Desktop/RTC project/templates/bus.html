@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Bus Allocation - RTC</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+
+
+    <style>
+
+        /* =========================================
+           BUS ALLOCATION PAGE
+        ========================================= */
+
+        .bus-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding-bottom: 10px;
+        }
+
+
+        .bus-table {
+            width: 1500px !important;
+            min-width: 1500px !important;
+            border-collapse: collapse !important;
+            table-layout: fixed !important;
+        }
+
+
+        .bus-table th {
+            height: 55px;
+            padding: 12px 10px;
+            text-align: center;
+            vertical-align: middle;
+            white-space: nowrap;
+            font-size: 14px;
+        }
+
+
+        .bus-table td {
+            height: 65px;
+            padding: 12px 10px;
+            text-align: center;
+            vertical-align: middle;
+            white-space: nowrap;
+            font-size: 14px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+
+        /* Column widths */
+
+        .bus-table th:nth-child(1),
+        .bus-table td:nth-child(1) {
+            width: 130px;
+        }
+
+        .bus-table th:nth-child(2),
+        .bus-table td:nth-child(2) {
+            width: 110px;
+        }
+
+        .bus-table th:nth-child(3),
+        .bus-table td:nth-child(3) {
+            width: 120px;
+        }
+
+        .bus-table th:nth-child(4),
+        .bus-table td:nth-child(4) {
+            width: 170px;
+        }
+
+        .bus-table th:nth-child(5),
+        .bus-table td:nth-child(5) {
+            width: 140px;
+        }
+
+        .bus-table th:nth-child(6),
+        .bus-table td:nth-child(6) {
+            width: 180px;
+        }
+
+        .bus-table th:nth-child(7),
+        .bus-table td:nth-child(7) {
+            width: 160px;
+        }
+
+        .bus-table th:nth-child(8),
+        .bus-table td:nth-child(8) {
+            width: 170px;
+        }
+
+        .bus-table th:nth-child(9),
+        .bus-table td:nth-child(9) {
+            width: 220px;
+        }
+
+
+        /* Action column */
+
+        .bus-table td:nth-child(9) {
+            overflow: visible !important;
+        }
+
+
+        .bus-table .action-buttons {
+            position: static !important;
+
+            display: flex !important;
+
+            align-items: center !important;
+            justify-content: center !important;
+
+            gap: 10px !important;
+
+            width: 100% !important;
+
+            margin: 0 !important;
+            padding: 0 !important;
+
+            white-space: nowrap !important;
+        }
+
+
+        .bus-table .edit-btn,
+        .bus-table .delete-btn {
+
+            position: static !important;
+
+            display: inline-flex !important;
+
+            align-items: center !important;
+            justify-content: center !important;
+
+            flex-shrink: 0 !important;
+
+            height: 40px !important;
+
+            margin: 0 !important;
+
+            padding: 0 14px !important;
+
+            border-radius: 8px !important;
+
+            white-space: nowrap !important;
+        }
+
+
+        .bus-table .edit-btn {
+            width: 85px !important;
+        }
+
+
+        .bus-table .delete-btn {
+            width: 90px !important;
+        }
+
+
+        /* Status */
+
+        .bus-table .status,
+        .bus-table .shift {
+
+            display: inline-flex !important;
+
+            align-items: center !important;
+            justify-content: center !important;
+
+            white-space: nowrap !important;
+
+        }
+
+
+        /* Scrollbar */
+
+        .bus-table-wrapper::-webkit-scrollbar {
+            height: 9px;
+        }
+
+        .bus-table-wrapper::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        .bus-table-wrapper::-webkit-scrollbar-track {
+            background: #eeeeee;
+        }
+
+
+        /* Form */
+
+        .bus-form-grid {
+            display: grid;
+
+            grid-template-columns: repeat(2, 1fr);
+
+            gap: 20px;
+        }
+
+
+        .bus-form-group {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 7px;
+        }
+
+
+        .bus-form-group label {
+            font-weight: 600;
+            color: #333;
+        }
+
+
+        .bus-form-group input,
+        .bus-form-group select {
+
+            width: 100%;
+
+            box-sizing: border-box;
+
+            padding: 13px 15px;
+
+            border: 1px solid #d0d5dd;
+
+            border-radius: 10px;
+
+            font-family: Poppins, sans-serif;
+
+            font-size: 14px;
+
+            outline: none;
+        }
+
+
+        .bus-form-group input:focus,
+        .bus-form-group select:focus {
+
+            border-color: #1565c0;
+
+            box-shadow: 0 0 0 3px rgba(21,101,192,0.10);
+        }
+
+
+        .bus-form-full {
+            grid-column: 1 / -1;
+        }
+
+
+        .bus-form-icon {
+
+            width: 48px;
+            height: 48px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            background: linear-gradient(
+                135deg,
+                #1565c0,
+                #42a5f5
+            );
+
+            color: white;
+
+            border-radius: 12px;
+
+            font-size: 24px;
+        }
+
+
+        @media (max-width: 800px) {
+
+            .bus-form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .bus-form-full {
+                grid-column: auto;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================
+     SIDEBAR
+========================================= -->
+
+<div class="sidebar">
+
+
+    <div class="logo">
+
+        <img src="{{ url_for('static', filename='images/rtc_logo.png') }}">
+
+        <h2>RTC</h2>
+
+    </div>
+
+
+    <ul>
+
+        <li>
+            <a href="/dashboard">
+                🏠 Dashboard
+            </a>
+        </li>
+
+
+        <li>
+            <a href="/conductor">
+                👨 Conductors
+            </a>
+        </li>
+
+
+        <li>
+            <a href="/cash">
+                💰 Cash
+            </a>
+        </li>
+
+
+        <li class="active">
+            <a href="/bus">
+                🚌 Bus Allocation
+            </a>
+        </li>
+
+
+        <li>
+            <a href="/sr">
+                📝 SR Entry
+            </a>
+        </li>
+
+
+        <li>
+            <a href="/reports">
+                📊 Reports
+            </a>
+        </li>
+
+
+        <li>
+            <a href="/logout">
+                🚪 Logout
+            </a>
+        </li>
+
+    </ul>
+
+</div>
+
+
+
+<!-- =========================================
+     MAIN CONTENT
+========================================= -->
+
+<div class="main-content">
+
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+
+        <div class="header-left">
+
+            <div>
+
+                <h1>
+                    🚌 Bus Allocation Management
+                </h1>
+
+                <p>
+                    RTC Administration • Bus & Duty Allocation
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="header-right">
+
+            <a href="#busForm"
+               class="add-btn">
+
+                ➕ Allocate Bus
+
+            </a>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =====================================
+         SUMMARY
+    ====================================== -->
+
+    <div class="summary-grid">
+
+
+        <div class="summary-card blue">
+
+            <h4>
+                Total Allocations
+            </h4>
+
+            <h2>
+                {{ buses|length }}
+            </h2>
+
+        </div>
+
+
+        <div class="summary-card green">
+
+            <h4>
+                Morning Shift
+            </h4>
+
+            <h2>
+                12
+            </h2>
+
+        </div>
+
+
+        <div class="summary-card orange">
+
+            <h4>
+                Afternoon Shift
+            </h4>
+
+            <h2>
+                8
+            </h2>
+
+        </div>
+
+
+        <div class="summary-card dark">
+
+            <h4>
+                Night Shift
+            </h4>
+
+            <h2>
+                5
+            </h2>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================
+         BUS ALLOCATION FORM
+    ====================================== -->
+
+    <div class="form-container"
+         id="busForm">
+
+
+        <div class="form-title"
+             style="
+             display:flex;
+             align-items:center;
+             gap:15px;
+             ">
+
+
+            <div class="bus-form-icon">
+                🚌
+            </div>
+
+
+            <div>
+
+                <h2 style="
+                    margin:0;
+                    color:#123f7a;
+                    font-size:21px;
+                    font-weight:600;
+                ">
+
+                    Bus Allocation
+
+                </h2>
+
+
+                <p style="
+                    margin:5px 0 0;
+                    color:#777;
+                    font-size:13px;
+                ">
+
+                    Allocate bus and duty details
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <hr class="form-divider">
+
+
+        <form action="/save_bus"
+              method="POST">
+
+
+            <div class="bus-form-grid">
+
+
+                <!-- BUS NUMBER -->
+
+                <div class="bus-form-group">
+
+                    <label>
+                        Bus Number
+                    </label>
+
+                    <input
+                        type="text"
+                        name="bus_number"
+                        placeholder="Enter Bus Number"
+                        required>
+
+                </div>
+
+
+                <!-- ROUTE -->
+
+                <div class="bus-form-group">
+
+                    <label>
+                        Route
+                    </label>
+
+                    <input
+                        type="text"
+                        name="route"
+                        placeholder="Enter Route Number"
+                        required>
+
+                </div>
+
+
+                <!-- DRIVER ID -->
+
+                <div class="bus-form-group">
+
+                    <label>
+                        Driver ID
+                    </label>
+
+                    <input
+                        type="text"
+                        name="driver_id"
+                        placeholder="Enter Driver ID"
+                        required>
+
+                </div>
+
+
+                <!-- DRIVER NAME -->
+
+                <div class="bus-form-group">
+
+                    <label>
+                        Driver Name
+                    </label>
+
+                    <input
+                        type="text"
+                        name="driver_name"
+                        placeholder="Enter Driver Name"
+                        required>
+
+                </div>
+
+
+                <!-- CONDUCTOR ID -->
+
+                <div class="bus-form-group">
+
+                    <label>
+                        Conductor ID
+                    </label>
+
+                    <input
+                        type="text"
+                        name="conductor_id"
+                        placeholder="Enter Conductor ID"
+                        required>
+
+                </div>
+
+
+                <!-- CONDUCTOR NAME -->
+
+                <div class="bus-form-group">
+
+                    <label>
+                        Conductor Name
+                    </label>
+
+                    <input
+                        type="text"
+                        name="conductor_name"
+                        placeholder="Enter Conductor Name"
+                        required>
+
+                </div>
+
+
+                <!-- SHIFT -->
+
+                <div class="bus-form-group">
+
+                    <label>
+                        Shift
+                    </label>
+
+                    <select name="shift">
+
+                        <option value="Morning">
+                            Morning
+                        </option>
+
+                        <option value="Afternoon">
+                            Afternoon
+                        </option>
+
+                        <option value="Night">
+                            Night
+                        </option>
+
+                    </select>
+
+                </div>
+
+<div class="bus-form-group">
+
+    <label>
+        Duty Date
+    </label>
+
+    <input
+        type="date"
+        name="duty_date"
+        required>
+
+</div>
+                <!-- STATUS -->
+
+                <div class="bus-form-group">
+
+                    <label>
+                        Status
+                    </label>
+
+                    <select name="status">
+
+                        <option value="Active">
+                            Active
+                        </option>
+
+                        <option value="Maintenance">
+                            Maintenance
+                        </option>
+
+                        <option value="Available">
+                            Available
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <br>
+
+
+            <button
+                type="submit"
+                class="save-btn">
+
+                💾 Save Bus Allocation
+
+            </button>
+
+
+        </form>
+
+    </div>
+
+
+
+    <!-- =====================================
+         BUS RECORDS
+    ====================================== -->
+
+    <div class="form-container table-card">
+
+
+        <div class="section-header">
+
+
+            <div>
+
+                <h2>
+                    🚌 Bus Allocation Records
+                </h2>
+
+                <p>
+                    Registered bus and duty allocation details
+                </p>
+
+            </div>
+
+
+            <strong>
+
+                Total:
+                {{ buses|length }}
+
+            </strong>
+
+
+        </div>
+
+
+
+        <div class="bus-table-wrapper">
+
+
+            <table class="professional-table bus-table">
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Bus Number
+                        </th>
+
+                        <th>
+                            Route
+                        </th>
+
+                        <th>
+                            Driver ID
+                        </th>
+
+                        <th>
+                            Driver Name
+                        </th>
+
+                        <th>
+                            Conductor ID
+                        </th>
+
+                        <th>
+                            Conductor Name
+                        </th>
+
+                        <th>
+                            Shift
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+
+                <tbody>
+
+
+                    {% for bus in buses %}
+
+
+                    <tr>
+
+
+                        <!-- BUS NUMBER -->
+
+                        <td>
+                            {{ bus['bus_number'] }}
+                        </td>
+
+
+                        <!-- ROUTE -->
+<!-- ROUTE -->
+<td>
+    {{ bus['route_number'] }}
+</td>
+
+
+                        <!-- DRIVER ID -->
+
+                        <td>
+                            {{ bus['driver_id'] }}
+                        </td>
+
+
+                        <!-- DRIVER NAME -->
+
+                        <td>
+                            {{ bus['driver_name'] }}
+                        </td>
+
+
+                        <!-- CONDUCTOR ID -->
+
+                        <td>
+                            {{ bus['conductor_id'] }}
+                        </td>
+
+
+                        <!-- CONDUCTOR NAME -->
+
+                        <td>
+                            {{ bus['conductor_name'] }}
+                        </td>
+
+
+                        <!-- SHIFT -->
+
+                        <td>
+
+
+                            {% if bus['shift'] == "Morning" %}
+
+
+                                <span class="shift morning">
+
+                                    🌅 Morning
+
+                                </span>
+
+
+                            {% elif bus['shift'] == "Afternoon" %}
+
+
+                                <span class="shift afternoon">
+
+                                    ☀️ Afternoon
+
+                                </span>
+
+
+                            {% else %}
+
+
+                                <span class="shift night">
+
+                                    🌙 Night
+
+                                </span>
+
+
+                            {% endif %}
+
+
+                        </td>
+
+
+                        <!-- STATUS -->
+
+                        <td>
+
+
+                            {% if bus['status'] == "Active" %}
+
+
+                                <span class="status completed">
+
+                                    🟢 Active
+
+                                </span>
+
+
+                            {% elif bus['status'] == "Maintenance" %}
+
+
+                                <span class="status pending">
+
+                                    🟡 Maintenance
+
+                                </span>
+
+
+                            {% else %}
+
+
+                                <span class="status verified">
+
+                                    🔵 Available
+
+                                </span>
+
+
+                            {% endif %}
+
+
+                        </td>
+
+
+                        <!-- ACTION -->
+
+                        <td>
+
+
+                            <div class="action-buttons">
+
+
+                                <a
+                                    href="/edit_bus/{{ bus['id'] }}"
+                                    class="edit-btn">
+
+                                    ✏️ Edit
+
+                                </a>
+
+
+                                <a
+                                    href="/delete_bus/{{ bus['id'] }}"
+                                    class="delete-btn"
+
+                                    onclick="
+                                    return confirm(
+                                    'Delete this bus allocation?'
+                                    )">
+
+                                    🗑 Delete
+
+                                </a>
+
+
+                            </div>
+
+
+                        </td>
+
+
+                    </tr>
+
+
+                    {% endfor %}
+
+
+                </tbody>
+
+
+            </table>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================
+         DASHBOARD BUTTON
+    ====================================== -->
+
+    <div style="
+        text-align:center;
+        margin:30px 0;
+    ">
+
+
+        <a
+            href="/dashboard"
+            class="save-btn">
+
+            🏠 Dashboard
+
+        </a>
+
+
+    </div>
+
+
+
+    <!-- =====================================
+         FOOTER
+    ====================================== -->
+
+    <div class="footer">
+
+        © 2026 RTC Smart Duty Settlement System
+
+    </div>
+
+
+</div>
+
+
+</body>
+
+</html>

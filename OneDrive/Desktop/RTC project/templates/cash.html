@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Cash Remittance - RTC</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+
+</head>
+
+<body>
+
+
+<!-- ================= SIDEBAR ================= -->
+
+<div class="sidebar">
+
+    <div class="logo">
+
+        <img src="{{ url_for('static', filename='images/rtc_logo.png') }}">
+
+        <h2>RTC</h2>
+
+    </div>
+
+
+    <ul>
+
+        <li>
+            <a href="/dashboard">
+                🏠 Dashboard
+            </a>
+        </li>
+
+        <li>
+            <a href="/conductor">
+                👨 Conductors
+            </a>
+        </li>
+
+        <li class="active">
+            <a href="/cash">
+                💰 Cash
+            </a>
+        </li>
+
+        <li>
+            <a href="/bus">
+                🚌 Bus Allocation
+            </a>
+        </li>
+
+        <li>
+            <a href="/sr">
+                📝 SR Entry
+            </a>
+        </li>
+
+        <li>
+            <a href="/reports">
+                📊 Reports
+            </a>
+        </li>
+
+        <li>
+            <a href="/logout">
+                🚪 Logout
+            </a>
+        </li>
+
+    </ul>
+
+</div>
+
+
+<!-- ================= MAIN CONTENT ================= -->
+
+<div class="main-content">
+
+
+    <!-- ================= HEADER ================= -->
+
+    <div class="header">
+
+        <div class="header-left">
+
+            <h1>
+                💰 Cash Remittance Management
+            </h1>
+
+            <p>
+                RTC Administration • Cash Settlement Management
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= FLASH MESSAGE ================= -->
+
+    {% with messages = get_flashed_messages() %}
+
+        {% if messages %}
+
+            <div class="flash-message">
+
+                {% for message in messages %}
+
+                    {{ message }}
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    <!-- ================= SUMMARY ================= -->
+
+    <div class="summary-grid">
+
+
+        <div class="summary-card blue">
+
+            <h4>
+                Total Collection
+            </h4>
+
+            <h2>
+                ₹ {{ total_collection }}
+            </h2>
+
+        </div>
+
+
+        <div class="summary-card green">
+
+            <h4>
+                Completed
+            </h4>
+
+            <h2>
+                {{ completed_cash }}
+            </h2>
+
+        </div>
+
+
+        <div class="summary-card dark">
+
+            <h4>
+                Total Entries
+            </h4>
+
+            <h2>
+                {{ cash_records|length }}
+            </h2>
+
+        </div>
+
+
+    </div>
+    <!-- ================= CASH ENTRY FORM ================= -->
+
+<div class="form-container">
+
+    <div class="form-title">
+
+        <div class="form-icon">
+            💰
+        </div>
+
+        <div>
+            <h2>Cash Remittance Entry</h2>
+            <p>Enter cash settlement details for conductor</p>
+        </div>
+
+    </div>
+
+    <hr class="form-divider">
+
+    <form action="/save_cash" method="POST">
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label>Employee ID</label>
+                <input type="text"
+                       name="employee_id"
+                       placeholder="Enter Employee ID"
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label>Conductor Name</label>
+                <input type="text"
+                       name="conductor_name"
+                       placeholder="Enter Conductor Name"
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label>Bus Number</label>
+                <input type="text"
+                       name="bus_number"
+                       placeholder="Enter Bus Number"
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label>Cash Amount</label>
+                <input type="number"
+                       name="cash_amount"
+                       placeholder="Enter Cash Amount"
+                       step="0.01"
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label>Settlement Time</label>
+                <input type="datetime-local"
+                       name="settlement_time"
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label>Status</label>
+
+                <select name="status">
+                    <option value="Completed">Completed</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Verified">Verified</option>
+                </select>
+            </div>
+
+            <div class="form-group full-width">
+
+                <label>Remarks</label>
+
+                <textarea name="remarks"
+                          placeholder="Enter remarks"
+                          rows="4"></textarea>
+
+            </div>
+
+        </div>
+
+        <button type="submit" class="save-btn">
+            💾 Save Cash Remittance
+        </button>
+
+    </form>
+
+</div>
+
+
+    <!-- ================= CASH RECORDS ================= -->
+
+    <div class="form-container table-card">
+
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    📋 Cash Remittance Records
+                </h2>
+
+                <p>
+                    Registered cash settlement details
+                </p>
+
+            </div>
+
+            <strong>
+                Total: {{ cash_records|length }}
+            </strong>
+
+        </div>
+
+
+        <!-- TABLE WRAPPER -->
+
+        <div class="cash-table-wrapper">
+
+
+            <table class="professional-table cash-table">
+
+
+                <!-- ================= TABLE HEADER ================= -->
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            No.
+                        </th>
+
+                        <th>
+                            Employee ID
+                        </th>
+
+                        <th>
+                            Conductor Name
+                        </th>
+
+                        <th>
+                            Bus Number
+                        </th>
+
+                        <th>
+                            Cash Amount
+                        </th>
+
+                        <th>
+                            Settlement Time
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Remarks
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <!-- ================= TABLE BODY ================= -->
+
+                <tbody>
+
+
+                    {% for cash in cash_records %}
+
+
+                    <tr>
+
+
+                        <!-- No -->
+
+                        <td>
+                            {{ loop.index }}
+                        </td>
+
+
+                        <!-- Employee ID -->
+
+                        <td>
+                            {{ cash[1] }}
+                        </td>
+
+
+                        <!-- Conductor -->
+
+                        <td>
+                            {{ cash[2] }}
+                        </td>
+
+
+                        <!-- Bus -->
+
+                        <td>
+                            {{ cash[3] }}
+                        </td>
+
+
+                        <!-- Amount -->
+
+                        <td class="cash-value">
+                            ₹ {{ cash[4] }}
+                        </td>
+
+
+                        <!-- Time -->
+
+                        <td>
+                            {{ cash[5] }}
+                        </td>
+
+
+                        <!-- Status -->
+
+                        <td>
+
+                            {% if cash[6] == "Completed" %}
+
+                                <span class="status completed">
+                                    🟢 Completed
+                                </span>
+
+                            {% elif cash[6] == "Pending" %}
+
+                                <span class="status pending">
+                                    🟡 Pending
+                                </span>
+
+                            {% else %}
+
+                                <span class="status verified">
+                                    🔵 Verified
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- Remarks -->
+
+                        <td>
+                            {{ cash[7] }}
+                        </td>
+
+
+                        <!-- Action -->
+
+                        <td>
+
+                            <div class="action-buttons">
+
+
+                                <a href="/edit_cash/{{ cash[0] }}"
+                                   class="edit-btn">
+
+                                    ✏️ Edit
+
+                                </a>
+
+
+                                <a href="/delete_cash/{{ cash[0] }}"
+                                   class="delete-btn"
+                                   onclick="return confirm('Delete this cash record?')">
+
+                                    🗑 Delete
+
+                                </a>
+
+
+                            </div>
+
+                        </td>
+
+
+                    </tr>
+
+
+                    {% endfor %}
+
+
+                </tbody>
+
+
+            </table>
+
+
+        </div>
+
+
+    </div>
+
+
+    <!-- ================= DASHBOARD BUTTON ================= -->
+
+    <div style="
+        text-align:center;
+        margin:25px 0;
+    ">
+
+        <a href="/dashboard"
+           class="save-btn">
+
+            🏠 Dashboard
+
+        </a>
+
+    </div>
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <div class="footer">
+
+        © 2026 RTC Smart Duty Settlement System
+
+    </div>
+
+
+</div>
+
+
+</body>
+
+</html>

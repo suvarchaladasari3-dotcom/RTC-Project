@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>RTC Administration Login</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+</head>
+
+<body class="login-body">
+
+<div class="login-container">
+
+    <div class="login-card">
+
+        <img src="{{ url_for('static', filename='images/rtc_logo.png') }}" class="login-logo">
+
+      <h1>RTC Smart Duty Settlement System</h1>
+
+<h3>Administrator Portal</h3>
+
+<p>Andhra Pradesh State Road Transport Corporation</p>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="flash-message">
+            {{ messages[0] }}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <form action="/login" method="POST">
+
+            <div class="input-group">
+
+                <label>Username</label>
+
+<input
+    type="text"
+    name="username"
+    placeholder="Enter Username"
+    required>
+
+<small class="demo-text">
+    Demo Login: <b>rtcadmin</b>
+</small>          
+            </div>
+
+            <div class="input-group">
+
+                <label>Password</label>
+
+                <div class="password-box">
+
+                    <input
+                       <input
+    type="password"
+    name="password"
+    id="password"
+    placeholder="Enter Password"
+    required>
+
+<small class="demo-text">
+    Password: <b>Rtc@123</b>
+</small>
+
+                    <span onclick="togglePassword()">👁</span>
+
+                </div>
+
+            </div>
+
+            <button type="submit" class="login-btn">
+
+                Login
+
+            </button>
+
+        </form>
+
+  <div class="footer-text">
+
+    © 2026 Andhra Pradesh State Road Transport Corporation
+
+    <br>
+
+    Authorized Personnel Only
+
+</div>
+
+    </div>
+
+</div>
+
+<script>
+
+function togglePassword(){
+
+    let pwd=document.getElementById("password");
+
+    if(pwd.type==="password"){
+
+        pwd.type="text";
+
+    }
+
+    else{
+
+        pwd.type="password";
+
+    }
+
+}
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit SR Entry</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="header">
+
+    <div class="header-left">
+        <h1>✏️ Edit SR Entry</h1>
+        <p>RTC Administration • Update Statistical Record</p>
+    </div>
+
+    <div class="header-right">
+        <h2>RTC Smart Duty Settlement System</h2>
+    </div>
+
+</div>
+
+<div class="form-card">
+
+<div class="section-header">
+
+<div>
+<h2>📝 Update SR Details</h2>
+<p>Edit conductor statistical record information.</p>
+</div>
+
+</div>
+
+<form action="/update_sr" method="POST">
+
+    <input type="hidden" name="id" value="{{ sr[0] }}">
+
+<div class="form-grid">
+
+<div>
+<label>SR Number</label>
+<input type="text" name="sr_number" value="{{ sr[1] }}" required>
+</div>
+
+<div>
+<label>Employee ID</label>
+<input type="text" name="employee_id" value="{{ sr[2] }}" required>
+</div>
+
+<div>
+<label>Conductor Name</label>
+<input type="text" name="conductor_name" value="{{ sr[3] }}" required>
+</div>
+
+<div>
+<label>Bus Number</label>
+<input type="text" name="bus_number" value="{{ sr[4] }}" required>
+</div>
+
+<div>
+<label>EPOS Collection</label>
+<input type="number" name="epos_collection" value="{{ sr[5] }}" required>
+</div>
+
+<div>
+<label>Cash Collection</label>
+<input type="number" name="cash_collection" value="{{ sr[6] }}" required>
+</div>
+
+</div>
+
+<div style="margin-top:20px;">
+
+<label>Remarks</label>
+
+<textarea
+name="remarks"
+rows="3"
+style="width:100%;
+padding:12px;
+border:1px solid #ccc;
+border-radius:10px;
+resize:none;">{{ sr[7] }}</textarea>
+
+</div>
+
+<div class="report-buttons">
+
+<button type="submit" class="save-btn">
+💾 Update SR
+</button>
+
+<a href="/sr" class="delete-btn"
+style="padding:14px 30px;
+border-radius:8px;
+text-decoration:none;
+display:inline-block;">
+❌ Cancel
+</a>
+
+</div>
+
+</form>
+
+</div>
+
+<footer class="footer">
+© 2026 RTC Smart Duty Settlement System
+</footer>
+
+</body>
+</html>python <app class="py"></app>

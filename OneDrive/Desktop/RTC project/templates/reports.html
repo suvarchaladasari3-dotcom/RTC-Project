@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Reports | RTC Smart Duty Settlement System</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="reports-page">
+
+    <!-- Header -->
+    <div class="reports-header">
+        <div>
+            <h1>📊 Reports & Documents</h1>
+            <p>RTC Smart Duty Settlement System</p>
+        </div>
+
+        <div class="reports-badge">
+            📄 REPORTS
+        </div>
+    </div>
+
+
+    <!-- PDF Download Section -->
+    <div class="report-card">
+
+        <div class="report-icon">
+            📄
+        </div>
+
+        <div class="report-content">
+            <h2>RTC Settlement Report</h2>
+
+            <p>
+                Generate and download the complete RTC settlement
+                report in PDF format.
+            </p>
+
+            <span class="report-info">
+                PDF Document • Settlement Records
+            </span>
+        </div>
+
+        <div class="report-action">
+
+            <a href="{{ url_for('download_report') }}"
+               class="download-btn">
+
+                ⬇ Download PDF
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- Footer -->
+    <div class="reports-footer">
+        © 2026 RTC Smart Duty Settlement System
+        <a href="{{ url_for('dashboard') }}" class="back-dashboard">
+        ← Back to Dashboard
+    </a>   
+    </div>
+
+</div>
+
+</body>
+</html>
