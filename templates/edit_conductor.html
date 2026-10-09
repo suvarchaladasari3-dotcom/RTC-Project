@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Conductor</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="header">
+    <h1>✏️ Edit Conductor</h1>
+    <div class="welcome">
+        <h3>RTC Smart Duty Settlement System</h3>
+    </div>
+</div>
+
+<h2 class="page-title">Update Conductor Details</h2>
+
+<div class="form-container">
+
+<form action="/update_conductor" method="POST">
+
+<div class="form-grid">
+
+<div>
+<label>Employee ID</label>
+<input type="text" name="employee_id" value="{{ conductor['employee_id'] }}" readonly>
+</div>
+
+<div>
+<label>Conductor Name</label>
+<input type="text" name="name" value="{{ conductor['name'] }}" required>
+</div>
+
+<div>
+<label>Depot</label>
+<input type="text" name="depot" value="{{ conductor['depot'] }}" required>
+</div>
+
+<div>
+<label>Bus Number</label>
+<input type="text" name="bus_number" value="{{ conductor['bus_number'] }}" required>
+</div>
+
+<div>
+<label>Route Number</label>
+<input type="text" name="route_number" value="{{ conductor['route_number'] }}" required>
+</div>
+
+<div>
+<label>Shift</label>
+
+<select name="shift">
+
+<option {% if conductor['shift']=="Morning" %}selected{% endif %}>Morning</option>
+<option {% if conductor['shift']=="Afternoon" %}selected{% endif %}>Afternoon</option>
+<option {% if conductor['shift']=="Night" %}selected{% endif %}>Night</option>
+
+</select>
+
+</div>
+
+</div>
+
+<br>
+
+<button type="submit">Update Conductor</button>
+
+</form>
+
+</div>
+
+<br>
+
+<center>
+<a href="/conductor">
+<button>⬅ Back</button>
+</a>
+</center>
+
+</body>
+</html>

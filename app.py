@@ -23,9 +23,8 @@ from collections import defaultdict
 app = Flask(__name__)
 app.secret_key = "rtc_project_secret"
 # ===== Dashboard Summary Function =====
-
 def get_dashboard_summary():
-    conn = sqlite3.connect("database.db")
+    conn = get_db()
 
     cursor = conn.cursor()
 
@@ -65,6 +64,11 @@ def get_db():
         check_same_thread=False
     )
     conn.row_factory = sqlite3.Row
+
+    # SQLite locking reduce cheyyadaniki
+    conn.execute("PRAGMA journal_mode=WAL")
+    conn.execute("PRAGMA busy_timeout=30000")
+
     return conn
 
 def update_conductor_table():
@@ -105,23 +109,7 @@ def update_conductor_table():
 
     conn.commit()
     conn.close()
-def update_database():
 
-    conn = sqlite3.connect("database.db")
-    cursor = conn.cursor()
-
-    try:
-        cursor.execute("""
-            ALTER TABLE bus
-            ADD COLUMN status TEXT DEFAULT 'Available'
-        """)
-        conn.commit()
-        print("Status column added successfully.")
-    except sqlite3.OperationalError:
-        # Column already exists
-        pass
-
-    conn.close()
 
 
 # -----------------------------
@@ -302,37 +290,37 @@ def conductor():
 # -----------------------------
 # Save Conductor
 # -----------------------------
-
 @app.route("/save_conductor", methods=["POST"])
 def save_conductor():
+    try:
+        print("FORM DATA:", request.form)
 
-    conn = get_db()
-    cursor = conn.cursor()
+        conn = get_db()
+        cursor = conn.cursor()
 
-    cursor.execute("""
-        INSERT INTO conductor
-        (employee_id, name, depot, bus_number, route_number, shift)
-        VALUES (?, ?, ?, ?, ?, ?)
-    """, (
-        request.form["employee_id"],
-        request.form["name"],
-        request.form["depot"],
-        request.form["bus_number"],
-        request.form["route_number"],
-        request.form["shift"]
-    ))
+        cursor.execute("""
+            INSERT INTO conductor
+            (employee_id, name, depot, bus_number, route_number, shift)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (
+            request.form["employee_id"],
+            request.form["name"],
+            request.form["depot"],
+            request.form["bus_number"],
+            request.form["route_number"],
+            request.form["shift"]
+        ))
 
-    conn.commit()
+        conn.commit()
+        conn.close()
 
-    save_activity(
-        f"👨 New Conductor Added : {request.form['name']}"
-    )
+        flash("✅ Conductor Saved Successfully!")
+        return redirect(url_for("conductor"))
 
-    conn.close()
+    except Exception as e:
+        print("ERROR:", e)
+        return f"ERROR: {e}"
 
-    flash("✅ Conductor Saved Successfully!")
-
-    return redirect(url_for("conductor"))
 
 
 
@@ -1252,7 +1240,5 @@ def logout():
 # Run Application
 # -----------------------------
 if __name__ == "__main__":
-    update_database()
     app.run(debug=True)
-
 

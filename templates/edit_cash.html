@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit Cash</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+<body>
+
+<div class="main-content">
+
+<div class="header">
+
+    <div class="header-left">
+        <h1>✏ Edit Cash Record</h1>
+        <p>RTC Administration • Update Cash Settlement</p>
+    </div>
+
+</div>
+
+<div class="form-card">
+
+<form action="/update_cash" method="POST">
+
+<input type="hidden" name="id" value="{{ cash[0] }}">
+
+<div class="form-grid">
+
+<div>
+<label>Employee ID</label>
+<input type="text" name="employee_id" value="{{ cash[1] }}">
+</div>
+
+<div>
+<label>Conductor Name</label>
+<input type="text" name="conductor_name" value="{{ cash[2] }}">
+</div>
+
+<div>
+<label>Bus Number</label>
+<input type="text" name="bus_number" value="{{ cash[3] }}">
+</div>
+
+<div>
+<label>Cash Amount</label>
+<input type="number" step="0.01" name="cash_amount" value="{{ cash[4] }}">
+</div>
+
+<div>
+<label>Settlement Time</label>
+<input type="text" name="settlement_time" value="{{ cash[5] }}">
+</div>
+
+<div>
+<label>Status</label>
+
+<select name="status">
+
+<option {% if cash[6]=='Pending' %}selected{% endif %}>Pending</option>
+
+<option {% if cash[6]=='Completed' %}selected{% endif %}>Completed</option>
+
+</select>
+
+</div>
+
+<div style="grid-column:1 / span 2;">
+<label>Remarks</label>
+<input type="text" name="remarks" value="{{ cash[7] }}">
+</div>
+
+</div>
+
+<div class="report-buttons">
+
+<button class="save-btn" type="submit">
+💾 Update Cash
+</button>
+
+<a href="/cash" class="edit-btn">
+❌ Cancel
+</a>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+</body>
+</html>

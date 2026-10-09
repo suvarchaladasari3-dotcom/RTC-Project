@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SR Entry</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<!-- HEADER -->
+
+<div class="header">
+
+    <div class="header-left">
+        <h1>📝 Manage SR Entry</h1>
+        <p>RTC Administration • Statistical Record Management</p>
+    </div>
+
+    <div class="header-right">
+        <a href="#srForm" class="add-btn">
+            ➕ Add SR Entry
+        </a>
+    </div>
+
+</div>
+
+<!-- SUMMARY CARDS -->
+
+<div class="summary-grid">
+
+    <div class="summary-card blue">
+        <h4>Total SR Entries</h4>
+        <h2>{{ sr_records|length }}</h2>
+    </div>
+
+    <div class="summary-card green">
+        <h4>Verified</h4>
+        <h2>15</h2>
+    </div>
+
+    <div class="summary-card orange">
+        <h4>Pending</h4>
+        <h2>5</h2>
+    </div>
+
+    <div class="summary-card dark">
+        <h4>Today's Entries</h4>
+        <h2>3</h2>
+    </div>
+
+</div>
+
+<!-- FORM -->
+
+<div class="form-card" id="srForm">
+
+    <div class="section-header">
+        <div>
+            <h2>📝 SR Entry Management</h2>
+            <p>Enter Statistical Record details for conductors.</p>
+        </div>
+    </div>
+
+    <form action="/save_sr" method="POST">
+
+        <div class="form-grid">
+
+            <div>
+                <label>SR Number</label>
+                <input type="text" name="sr_number" required>
+            </div>
+
+            <div>
+                <label>Employee ID</label>
+                <input type="text" name="employee_id" required>
+            </div>
+
+            <div>
+                <label>Conductor Name</label>
+                <input type="text" name="conductor_name" required>
+            </div>
+
+            <div>
+                <label>Bus Number</label>
+                <input type="text" name="bus_number" required>
+            </div>
+
+            <div>
+                <label>EPOS Collection</label>
+                <input type="number" name="epos_collection" required>
+            </div>
+
+            <div>
+                <label>Cash Collection</label>
+                <input type="number" name="cash_collection" required>
+            </div>
+            <div class="form-group">
+    <label>Verification Status</label>
+    <input
+        type="text"
+        id="verification"
+        readonly
+        style="background:#f5f5f5;font-weight:bold;"
+    >
+</div>
+
+<div class="form-group">
+    <label>Difference</label>
+    <input
+        type="text"
+        id="difference"
+        readonly
+        style="background:#f5f5f5;font-weight:bold;"
+    >
+</div>
+
+        </div>
+
+        <div style="margin-top:18px;">
+
+            <label>Remarks</label>
+
+            <textarea
+                name="remarks"
+                rows="3"
+                style="width:100%;
+                padding:12px;
+                border:1px solid #ccc;
+                border-radius:10px;
+                resize:none;"></textarea>
+
+        </div>
+
+        <button type="submit" class="save-btn">
+            💾 Save SR Entry
+        </button>
+
+    </form>
+
+</div>
+
+<!-- SEARCH -->
+
+<div class="search-panel">
+
+    <form action="/search_sr" method="GET" style="display:flex;width:100%;gap:10px;">
+
+        <input
+            type="text"
+            name="sr_number"
+            placeholder="🔍 Search SR Number">
+
+        <button type="submit" class="search-btn">
+            Search
+        </button>
+
+        <a href="/sr">
+
+            <button type="button" class="reset-btn">
+                Reset
+            </button>
+
+        </a>
+
+    </form>
+
+</div>
+
+<!-- TABLE -->
+
+<div class="table-card">
+
+    <h2>📝 Manage SR Records</h2>
+
+    <table>
+
+        <tr>
+            <th>S.No</th>
+            <th>SR Number</th>
+            <th>Employee ID</th>
+            <th>Conductor Name</th>
+            <th>Bus Number</th>
+            <th>EPOS Collection</th>
+            <th>Cash Collection</th>
+            <th>Remarks</th>
+            <th>Actions</th>
+        </tr>
+
+        {% for sr in sr_records %}
+
+        <tr>
+
+            <td>{{ loop.index }}</td>
+            <td>{{ sr[1] }}</td>
+            <td>{{ sr[2] }}</td>
+            <td>{{ sr[3] }}</td>
+            <td>{{ sr[4] }}</td>
+
+            <td class="cash-value">
+                ₹ {{ sr[5] }}
+            </td>
+
+            <td class="cash-value">
+                ₹ {{ sr[6] }}
+            </td>
+
+            <td class="remarks">
+                {{ sr[7] }}
+            </td>
+
+            <td>
+
+                <div class="action-buttons">
+
+                    <a href="/edit_sr/{{ sr[0] }}" class="edit-btn">
+                        ✏️ Edit
+                    </a>
+
+                    <a href="/delete_sr/{{ sr[0] }}"
+                       class="delete-btn"
+                       onclick="return confirm('Delete this SR Record?')">
+
+                        🗑 Delete
+
+                    </a>
+
+                </div>
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+</div>
+
+<!-- DASHBOARD BUTTON -->
+
+<div class="report-buttons">
+
+    <a href="/dashboard" class="save-btn">
+        🏠 Dashboard
+    </a>
+
+</div>
+
+<!-- FOOTER -->
+
+<footer class="footer">
+    © 2026 RTC Smart Duty Settlement System
+</footer>
+
+<script>
+
+function verifyCash(){
+
+    let epos = Number(document.getElementsByName("epos_collection")[0].value);
+
+    let cash = Number(document.getElementsByName("cash_collection")[0].value);
+
+    if(epos==0 || cash==0){
+        return;
+    }
+
+    let diff = epos-cash;
+
+    document.getElementById("difference").value="₹ "+Math.abs(diff);
+
+    if(diff==0){
+
+        document.getElementById("verification").value="Matched ✅";
+
+    }
+
+    else{
+
+        document.getElementById("verification").value="Mismatch ❌";
+
+    }
+
+}
+
+document.getElementsByName("epos_collection")[0].addEventListener("keyup",verifyCash);
+
+document.getElementsByName("cash_collection")[0].addEventListener("keyup",verifyCash);
+
+</script>
+
+</body>
+</html>

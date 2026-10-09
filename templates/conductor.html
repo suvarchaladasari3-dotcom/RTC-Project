@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Conductor Management - RTC</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+
+</head>
+
+<body>
+
+<!-- ================= SIDEBAR ================= -->
+
+<div class="sidebar">
+
+    <div class="logo">
+
+        <img src="{{ url_for('static', filename='images/rtc_logo.png') }}">
+
+        <h2>RTC</h2>
+
+    </div>
+
+    <ul>
+
+        <li>
+            <a href="/dashboard">🏠 Dashboard</a>
+        </li>
+
+        <li class="active">
+            <a href="/conductor">👨 Conductors</a>
+        </li>
+
+        <li>
+            <a href="/cash">💰 Cash</a>
+        </li>
+
+        <li>
+            <a href="/bus">🚌 Bus Allocation</a>
+        </li>
+
+        <li>
+            <a href="/sr">📝 SR Entry</a>
+        </li>
+
+        <li>
+            <a href="/reports">📊 Reports</a>
+        </li>
+
+        <li>
+            <a href="/logout">🚪 Logout</a>
+        </li>
+
+    </ul>
+
+</div>
+
+
+<!-- ================= MAIN CONTENT ================= -->
+
+<div class="main-content">
+
+
+    <!-- ================= HEADER ================= -->
+
+    <div class="header">
+
+        <div class="header-left">
+
+            <div>
+
+                <h1>👨 Conductor Management</h1>
+
+                <p>
+                    RTC Administration • Conductor Details
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= SUMMARY ================= -->
+
+    <div class="summary-grid">
+
+        <div class="summary-card blue">
+
+            <h4>Total Conductors</h4>
+
+            <h2>{{ conductors|length }}</h2>
+
+        </div>
+
+
+        <div class="summary-card green">
+
+            <h4>Morning Shift</h4>
+
+            <h2>{{ morning_count }}</h2>
+
+        </div>
+
+
+        <div class="summary-card orange">
+
+            <h4>Afternoon Shift</h4>
+
+            <h2>{{ afternoon_count }}</h2>
+
+        </div>
+
+
+        <div class="summary-card dark">
+
+            <h4>Night Shift</h4>
+
+            <h2>{{ night_count }}</h2>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= REGISTRATION ================= -->
+
+    <div class="form-container">
+
+        <div class="form-title">
+
+            <div class="form-icon">
+                👨
+            </div>
+
+            <div>
+
+                <h2>Conductor Registration</h2>
+
+                <p>
+                    Enter conductor details
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <hr class="form-divider">
+
+
+        <form action="/save_conductor" method="POST">
+
+            <div class="form-grid">
+
+
+                <!-- Employee ID -->
+
+                <div class="form-group">
+
+                    <label>Employee ID</label>
+
+                    <input
+                        type="text"
+                        name="employee_id"
+                        placeholder="Enter Employee ID"
+                        required>
+
+                </div>
+
+
+                <!-- Name -->
+
+                <div class="form-group">
+
+                    <label>Conductor Name</label>
+
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="Enter Conductor Name"
+                        required>
+
+                </div>
+
+
+                <!-- Depot -->
+
+                <div class="form-group">
+
+                    <label>Depot</label>
+
+                    <input
+                        type="text"
+                        name="depot"
+                        placeholder="Enter Depot"
+                        required>
+
+                </div>
+
+
+                <!-- Bus Number -->
+
+                <div class="form-group">
+
+                    <label>Bus Number</label>
+
+                    <input
+                        type="text"
+                        name="bus_number"
+                        placeholder="Enter Bus Number"
+                        required>
+
+                </div>
+
+
+                <!-- Route Number -->
+
+                <div class="form-group">
+
+                    <label>Route Number</label>
+
+                    <input
+                        type="text"
+                        name="route_number"
+                        placeholder="Enter Route Number"
+                        required>
+
+                </div>
+
+
+                <!-- Shift -->
+
+                <div class="form-group">
+
+                    <label>Shift</label>
+
+                    <select name="shift">
+
+                        <option value="Morning">
+                            Morning
+                        </option>
+
+                        <option value="Afternoon">
+                            Afternoon
+                        </option>
+
+                        <option value="Night">
+                            Night
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- SAVE -->
+
+            <button
+                type="submit"
+                class="save-btn">
+
+                💾 Save Conductor
+
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- ================= SEARCH ================= -->
+
+    <div class="form-container">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>🔍 Search Conductors</h2>
+
+                <p>
+                    Search conductor records using Employee ID
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <form action="/search_conductor"
+      method="GET"
+      class="search-panel">
+           
+            <input
+                type="text"
+                id="searchInput"
+                name="employee_id"
+                placeholder="🔍 Search by Employee ID">
+
+
+            <button
+                type="submit"
+                class="search-btn">
+
+                Search
+
+            </button>
+
+
+            <a href="/conductor">
+
+                <button
+                    type="button"
+                    class="reset-btn">
+
+                    Reset
+
+                </button>
+
+            </a>
+
+        </form>
+
+    </div>
+
+
+    <!-- ================= RECORDS ================= -->
+
+    <div class="form-container table-card">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>📋 Conductor Records</h2>
+
+                <p>
+                    Registered conductor details
+                </p>
+
+            </div>
+
+            <strong>
+                Total: {{ conductors|length }}
+            </strong>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table class="professional-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Employee ID</th>
+
+                        <th>Name</th>
+
+                        <th>Depot</th>
+
+                        <th>Bus Number</th>
+
+                        <th>Route Number</th>
+
+                        <th>Shift</th>
+
+                        <th>Action</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for conductor in conductors %}
+
+                    <tr>
+
+
+                        <!-- Employee ID -->
+
+                        <td>
+                            {{ conductor[0] }}
+                        </td>
+
+
+                        <!-- Name -->
+
+              <td>
+    {{ conductor[1] }}
+</td>
+
+
+                        <!-- Depot -->
+
+                        <td>
+                            {{ conductor[2] }}
+                        </td>
+
+
+                        <!-- Bus Number -->
+
+                        <td>
+                            {{ conductor[3] }}
+                        </td>
+
+
+                        <!-- Route Number -->
+
+                        <td>
+                            {{ conductor[4] }}
+                        </td>
+
+
+                        <!-- Shift -->
+
+                        <td>
+
+                            {% if conductor[5] == "Morning" %}
+
+                                <span class="shift morning">
+                                    🟢 Morning
+                                </span>
+
+                            {% elif conductor[5] == "Afternoon" %}
+
+                                <span class="shift afternoon">
+                                    🟠 Afternoon
+                                </span>
+
+                            {% else %}
+
+                                <span class="shift night">
+                                    🔵 Night
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                       <!-- ACTION -->
+
+<td>
+
+    <div class="action-buttons">
+
+        <a
+            href="/edit_conductor/{{ conductor[0] }}"
+            class="edit-btn">
+            ✏️ Edit
+        </a>
+
+        <a
+            href="/delete_conductor/{{ conductor[0] }}"
+            class="delete-btn"
+            onclick="return confirm('Delete this conductor?')">
+            🗑 Delete
+        </a>
+
+    </div>
+
+</td> 
+
+
+                            
+
+                   
+
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= NO RESULTS ================= -->
+
+    <div
+        id="noResults"
+        class="no-results"
+        style="display:none;">
+
+        ❌ No Records Found
+
+    </div>
+
+
+    <!-- ================= DASHBOARD ================= -->
+
+    <div class="bottom-dashboard">
+
+        <a href="/dashboard">
+
+            🏠 Back to Dashboard
+
+        </a>
+
+    </div>
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <div class="footer">
+
+        © 2026 RTC Smart Duty Settlement System
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

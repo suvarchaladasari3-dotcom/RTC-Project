@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Bus Allocation</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="main-content">
+
+<div class="form-card">
+
+<h2>✏️ Edit Bus Allocation</h2>
+
+<p class="form-subtitle">
+Update Bus Allocation Details
+</p>
+
+<form action="/update_bus" method="POST">
+
+<input type="hidden" name="id" value="{{ bus['id'] }}">
+
+<div class="form-grid">
+
+<div>
+<label>Bus Number</label>
+<input type="text" name="bus_number"
+value="{{ bus['bus_number'] }}" required>
+</div>
+
+<div>
+<label>Route Number</label>
+<input type="text" name="route_number"
+value="{{ bus['route_number'] }}" required>
+</div>
+
+<div>
+<label>Driver ID</label>
+<input type="text" name="driver_id"
+value="{{ bus['driver_id'] }}" required>
+</div>
+
+<div>
+<label>Driver Name</label>
+<input type="text" name="driver_name"
+value="{{ bus['driver_name'] }}" required>
+</div>
+
+<div>
+<label>Conductor ID</label>
+<input type="text" name="conductor_id"
+value="{{ bus['conductor_id'] }}" required>
+</div>
+
+<div>
+<label>Conductor Name</label>
+<input type="text" name="conductor_name"
+value="{{ bus['conductor_name'] }}" required>
+</div>
+
+<div>
+<label>Shift</label>
+
+<select name="shift">
+
+<option value="Morning"
+{% if bus['shift']=="Morning" %}selected{% endif %}>
+Morning
+</option>
+
+<option value="Afternoon"
+{% if bus['shift']=="Afternoon" %}selected{% endif %}>
+Afternoon
+</option>
+
+<option value="Night"
+{% if bus['shift']=="Night" %}selected{% endif %}>
+Night
+</option>
+
+</select>
+
+</div>
+
+<div>
+<label>Duty Date</label>
+<input type="date"
+name="duty_date"
+value="{{ bus['duty_date'] }}"
+required>
+</div>
+<div>
+    <label>Bus Status</label>
+
+    <select name="status">
+
+        <option value="Running"
+        {% if bus['status']=="Running" %}selected{% endif %}>
+        🟢 Running
+        </option>
+
+        <option value="Maintenance"
+        {% if bus['status']=="Maintenance" %}selected{% endif %}>
+        🟡 Maintenance
+        </option>
+
+        <option value="Available"
+        {% if bus['status']=="Available" %}selected{% endif %}>
+        🔵 Available
+        </option>
+
+    </select>
+</div>
+
+</div>
+
+<br>
+
+<div class="report-buttons">
+
+<button type="submit" class="save-btn">
+💾 Update Bus
+</button>
+
+<a href="/bus" class="edit-btn">
+⬅ Back
+</a>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+</body>
+</html>

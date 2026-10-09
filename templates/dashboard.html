@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RTC Smart Duty Settlement System</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+</head>
+
+<body>
+
+<!-- ================= SIDEBAR ================= -->
+
+<div class="sidebar">
+
+    <div class="logo">
+        <img src="{{ url_for('static', filename='images/rtc_logo.png') }}">
+        <h2>RTC</h2>
+    </div>
+
+    <ul>
+        <li class="active"><a href="/dashboard">🏠 Dashboard</a></li>
+        <li><a href="/conductor">👨 Conductors</a></li>
+        <li><a href="/cash">💰 Cash</a></li>
+        <li><a href="/bus">🚌 Bus Allocation</a></li>
+        <li><a href="/sr">📝 SR Entry</a></li>
+        <li><a href="/reports">📊 Reports</a></li>
+        <li><a href="/logout">🚪 Logout</a></li>
+    </ul>
+
+</div>
+
+<!-- ================= MAIN CONTENT ================= -->
+
+<div class="main-content">
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <div class="header-left">
+
+            <img src="{{ url_for('static', filename='images/rtc_logo.png') }}" class="header-logo">
+
+            <div>
+                <h1>RTC Smart Duty Settlement System</h1>
+                <p>Andhra Pradesh State Road Transport Corporation</p>
+            </div>
+
+        </div>
+
+        <div class="header-right">
+
+            <div class="notification" onclick="toggleNotifications()">
+
+                🔔
+
+                {% if notifications|length > 0 %}
+                <span class="badge">{{ notifications|length }}</span>
+                {% endif %}
+
+                <div class="notification-dropdown" id="notificationBox">
+
+                    <h3>Notifications</h3>
+
+                    {% if notifications %}
+
+                        {% for note in notifications %}
+                        <div class="notification-item">
+                            <strong>{{ note }}</strong>
+                        </div>
+                        {% endfor %}
+
+                    {% else %}
+
+                        <div class="notification-item">
+                            <strong>✅ No Notifications</strong>
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            <button id="darkBtn" onclick="toggleDarkMode()">🌙</button>
+
+            <div class="weather-card">
+                <h4 id="locationName">📍 Detecting...</h4>
+                <p id="weatherInfo">Fetching...</p>
+            </div>
+
+<div class="admin">
+
+    <div class="admin-icon">
+        <i class="fa-solid fa-user-shield"></i>
+    </div>
+
+    <div>
+        <h3>Welcome, Admin 👋</h3>
+        <p id="date"></p>
+        <p id="time"></p>
+    </div>
+
+</div>
+
+        </div>
+
+    </div>
+
+    <!-- SEARCH -->
+
+    <div class="search-box">
+
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="🔍 Search Modules..."
+            onkeyup="searchCards()">
+
+    </div>
+
+    <div id="noResults" style="display:none;text-align:center;color:red;font-size:18px;margin-top:20px;">
+        ❌ No Modules Found
+    </div>
+
+    <!-- TOP STATS -->
+
+    <div class="stats">
+
+        <div class="stat-card conductors">
+            <h3>👨 Conductors</h3>
+            <h2>{{ total_conductors }}</h2>
+        </div>
+
+        <div class="stat-card cash">
+            <h3>💰 Cash</h3>
+            <h2>₹ {{ total_cash }}</h2>
+        </div>
+
+        <div class="stat-card bus">
+            <h3>🚌 Buses</h3>
+            <h2>{{ total_buses }}</h2>
+        </div>
+
+        <div class="stat-card sr">
+            <h3>📝 SR Entries</h3>
+            <h2>{{ total_sr }}</h2>
+        </div>
+
+    </div>
+
+    <!-- BUS STATUS -->
+
+    <h2 class="dashboard-title">Bus Status</h2>
+
+    <div class="bus-status">
+
+        <div class="status-card running">
+            <h3>🟢 Running</h3>
+            <h1>{{ running_buses }}</h1>
+        </div>
+
+        <div class="status-card maintenance">
+            <h3>🟡 Maintenance</h3>
+            <h1>{{ maintenance_buses }}</h1>
+        </div>
+
+        <div class="status-card available">
+            <h3>🔵 Available</h3>
+            <h1>{{ available_buses }}</h1>
+        </div>
+
+    </div>
+
+<!-- ================= DASHBOARD CARDS ================= -->
+
+<h2 class="dashboard-title">Quick Access</h2>
+
+<div class="dashboard">
+
+    <div class="card" id="conductor">
+        <div class="icon">👨</div>
+        <h2>Conductors</h2>
+        <p>Manage Conductor Details</p>
+        <a href="/conductor"><button>Open</button></a>
+    </div>
+
+    <div class="card" id="cash">
+        <div class="icon">💰</div>
+        <h2>Cash Remittance</h2>
+        <p>Daily Cash Settlement</p>
+        <a href="/cash"><button>Open</button></a>
+    </div>
+
+    <div class="card" id="bus">
+        <div class="icon">🚌</div>
+        <h2>Bus Allocation</h2>
+        <p>Manage Bus Duties</p>
+        <a href="/bus"><button>Open</button></a>
+    </div>
+
+    <div class="card" id="sr">
+        <div class="icon">📝</div>
+        <h2>SR Entry</h2>
+        <p>Daily SR Records</p>
+        <a href="/sr"><button>Open</button></a>
+    </div>
+
+    <div class="card" id="reports">
+        <div class="icon">📊</div>
+        <h2>Reports</h2>
+        <p>View Reports & Analytics</p>
+        <a href="/reports"><button>Open</button></a>
+    </div>
+
+    <div class="card" id="logout">
+        <div class="icon">🚪</div>
+        <h2>Logout</h2>
+        <p>Exit from Dashboard</p>
+        <a href="/logout"><button>Logout</button></a>
+    </div>
+
+</div>
+
+<!-- ================= TODAY SUMMARY ================= -->
+
+<h2 class="dashboard-title">Today's Summary</h2>
+
+<div class="stats">
+
+    <div class="stat-card">
+        <h3>📅 Today's Duties</h3>
+        <h2>{{ today_duties }}</h2>
+    </div>
+
+    <div class="stat-card">
+        <h3>⏳ Pending Cash</h3>
+        <h2>{{ pending_cash }}</h2>
+    </div>
+
+    <div class="stat-card">
+        <h3>✅ Completed Cash</h3>
+        <h2>{{ completed_cash }}</h2>
+    </div>
+
+    <div class="stat-card">
+        <h3>💵 Today's Collection</h3>
+        <h2>₹ {{ total_cash }}</h2>
+    </div>
+
+</div>
+<!-- ================= CHARTS ================= -->
+
+<h2 class="dashboard-title">Analytics</h2>
+
+<div class="charts">
+
+    <div class="chart-card">
+        <h2>📈 RTC Statistics</h2>
+        <canvas id="rtcChart"></canvas>
+    </div>
+
+    <div class="chart-card">
+        <h2>🥧 RTC Overview</h2>
+        <canvas id="pieChart"></canvas>
+    </div>
+
+</div>
+
+<!-- ================= WEEKLY CASH COLLECTION ================= -->
+
+<div class="chart-card">
+
+    <h2>💰 Weekly Cash Collection</h2>
+
+    <canvas id="cashChart"></canvas>
+
+</div>
+
+<!-- ================= RECENT ACTIVITIES ================= -->
+
+
+
+<div class="activity-panel">
+
+    <h2>📋 Recent Activities</h2>
+
+    {% if activities %}
+
+        {% for activity in activities %}
+
+        <div class="activity-item">
+
+            <span>📌</span>
+
+            <div>
+
+                <h4>{{ activity["activity"] }}</h4>
+
+                <p>{{ activity["activity_time"] }}</p>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="activity-item">
+
+            <span>✅</span>
+
+            <div>
+
+                <h4>No Recent Activities</h4>
+
+                <p>Everything is up to date.</p>
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+</div>
+
+<script>
+
+// ================= CLOCK =================
+
+function updateClock(){
+    const now = new Date();
+    document.getElementById("date").innerHTML = now.toLocaleDateString();
+    document.getElementById("time").innerHTML = now.toLocaleTimeString();
+}
+setInterval(updateClock,1000);
+updateClock();
+
+// ================= DARK MODE =================
+
+function toggleDarkMode(){
+    document.body.classList.toggle("dark");
+}
+
+// ================= SEARCH =================
+
+function searchCards(){
+    let input=document.getElementById("searchInput").value.toLowerCase();
+    let cards=document.querySelectorAll(".card");
+    let found=false;
+
+    cards.forEach(card=>{
+        if(card.innerText.toLowerCase().includes(input)){
+            card.style.display="block";
+            found=true;
+        }else{
+            card.style.display="none";
+        }
+    });
+
+    document.getElementById("noResults").style.display=
+    found?"none":"block";
+}
+
+// ================= NOTIFICATIONS =================
+
+function toggleNotifications(){
+    let box=document.getElementById("notificationBox");
+    box.style.display=(box.style.display=="block")?"none":"block";
+}
+
+window.onclick=function(event){
+    if(!event.target.closest(".notification")){
+        let box=document.getElementById("notificationBox");
+        if(box) box.style.display="none";
+    }
+}
+
+// ================= RTC BAR CHART =================
+
+new Chart(document.getElementById("rtcChart"),{
+    type:"bar",
+    data:{
+        labels:["Conductors","Buses","SR Entries"],
+        datasets:[{
+            label:"RTC Statistics",
+            data:[
+                {{ total_conductors }},
+                {{ total_buses }},
+                {{ total_sr }}
+            ],
+            backgroundColor:[
+                "#1976d2",
+                "#ff9800",
+                "#7b1fa2"
+            ],
+            borderRadius:8
+        }]
+    },
+options:{
+    responsive:true,
+    maintainAspectRatio:true,
+    aspectRatio:2.5
+}
+});
+
+// ================= PIE CHART =================
+
+new Chart(document.getElementById("pieChart"),{
+    type:"doughnut",
+    data:{
+        labels:["Conductors","Buses","SR Entries"],
+        datasets:[{
+            data:[
+                {{ total_conductors }},
+                {{ total_buses }},
+                {{ total_sr }}
+            ],
+            backgroundColor:[
+                "#1976d2",
+                "#ff9800",
+                "#7b1fa2"
+            ]
+        }]
+    },
+    options:{
+        responsive:true,
+        maintainAspectRatio:false
+    }
+});
+// ================= PREMIUM CASH COLLECTION CHART =================
+
+const ctx = document.getElementById("cashChart").getContext("2d");
+
+// Gradient
+const gradient = ctx.createLinearGradient(0,0,0,450);
+gradient.addColorStop(0,"#0D47A1");
+gradient.addColorStop(0.5,"#1976D2");
+gradient.addColorStop(1,"#64B5F6");
+
+new Chart(ctx,{
+    type:"bar",
+
+    data:{
+        labels: {{ chart_labels|tojson }},
+        datasets:[{
+            label:"Cash Collection (₹)",
+            data: {{ chart_values|tojson }},
+
+            backgroundColor:gradient,
+            borderRadius:12,
+            borderSkipped:false,
+            barThickness:35,
+            hoverBackgroundColor:"#1565C0"
+        }]
+    },
+
+    options:{
+        responsive:true,
+        maintainAspectRatio:false,
+
+        plugins:{
+            legend:{
+                position:"top",
+                labels:{
+                    color:"#1A237E",
+                    font:{
+                        size:14,
+                        weight:"bold"
+                    }
+                }
+            },
+
+            tooltip:{
+                backgroundColor:"#0D47A1",
+                titleColor:"#fff",
+                bodyColor:"#fff",
+                cornerRadius:10,
+                callbacks:{
+                    label:function(context){
+                        return " ₹ " + context.raw.toLocaleString();
+                    }
+                }
+            }
+        },
+
+        scales:{
+            x:{
+                grid:{
+                    display:false
+                },
+                ticks:{
+                    color:"#444",
+                    font:{
+                        weight:"bold"
+                    }
+                }
+            },
+
+            y:{
+                beginAtZero:true,
+                grid:{
+                    color:"rgba(0,0,0,0.08)"
+                },
+                ticks:{
+                    callback:function(value){
+                        return "₹ " + value;
+                    }
+                }
+            }
+        },
+
+        animation:{
+            duration:1800,
+            easing:"easeOutQuart"
+        }
+    }
+});
+// ================= LOCATION =================
+
+if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(async function(position){
+
+        const lat=position.coords.latitude;
+        const lon=position.coords.longitude;
+
+        try{
+
+            const response=await fetch(
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`
+            );
+
+            const data=await response.json();
+
+            document.getElementById("locationName").innerHTML=
+            "📍 "+(data.locality||data.city||"Current Location");
+
+            document.getElementById("weatherInfo").innerHTML=
+            data.principalSubdivision||"";
+
+        }catch(e){
+
+            document.getElementById("locationName").innerHTML="📍 Location";
+            document.getElementById("weatherInfo").innerHTML="Unavailable";
+
+        }
+
+    });
+}
+
+</script>
+
+</body>
+</html>
+

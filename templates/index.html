@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RTC Smart Duty Settlement System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+{% if not logged_in %}
+
+<div class="login-box">
+
+<h2>RTC Smart Duty Settlement System</h2>
+
+<form method="POST">
+
+<input type="text" name="username" placeholder="Username" required>
+
+<input type="password" name="password" placeholder="Password" required>
+
+<button>Login</button>
+
+</form>
+
+</div>
+
+{% else %}
+
+<div class="dashboard">
+
+<h1>🚍 RTC Dashboard</h1>
+
+<div class="cards">
+
+<div class="card">
+<h3>Pending Settlements</h3>
+<p>25</p>
+</div>
+
+<div class="card">
+<h3>Completed Today</h3>
+<p>120</p>
+</div>
+
+<div class="card">
+<h3>Queue Status</h3>
+<p>Normal</p>
+</div>
+
+<div class="card">
+<h3>Average Time</h3>
+<p>18 mins</p>
+</div>
+
+</div>
+
+</div>
+
+{% endif %}
+
+</body>
+</html>
